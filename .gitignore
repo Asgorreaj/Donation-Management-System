@@ -1,15 +1,20 @@
-# Node modules
-assistpro-frontend/node_modules/
-
-# PHP vendor
+# PHP/vendor
+assistpro-backend/vendor/
 assistpro-backend/codes/vendor/
 
-# Composer artifacts
-assistpro-backend/codes/composer.lock
+# Node modules (যদি ফ্রন্টএন্ডে থাকে)
+assistpro-frontend/node_modules/
 
-# Environment files
-*.env
+#Env files
+assistpro-backend/codes/.env*
+assistpro-frontend/.env*
 
-# OS files
-.DS_Store
-Thumbs.db
+# Docker artifacts
+*.log
+*.cache
+docker-compose.override.yml
+
+# IDE / OS files
+*.DS_Store
+.vscode/
+.idea/
