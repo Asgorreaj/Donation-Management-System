@@ -1,0 +1,4 @@
+docker build -t assist-pro-frontend-img .
+docker run -dp 3001:3000 --name assist-pro-frontend assist-pro-frontend-img
+docker ps
+docker logs -f assist-pro-frontend

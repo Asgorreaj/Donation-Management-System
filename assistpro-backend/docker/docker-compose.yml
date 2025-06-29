@@ -1,0 +1,136 @@
+# version: "3.9"
+
+# services:
+#   mysql:
+#     image: mysql:8.0
+#     container_name: assistpro-mysql
+#     restart: unless-stopped
+#     environment:
+#       MYSQL_ROOT_PASSWORD: Asgor@123
+#       MYSQL_DATABASE: assist_pro_mf_disa
+#     ports:
+#       - "3307:3306"
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+#     networks:
+#       - assistpro-net
+
+#   redis:
+#     image: redis:alpine
+#     container_name: assistpro-redis
+#     restart: unless-stopped
+#     ports:
+#       - "6380:6379"
+#     networks:
+#       - assistpro-net
+
+#   app:
+#     build:
+#       context: ../
+#       dockerfile: docker/app/app.Dockerfile
+#     image: assistpro-backend-app-img
+#     container_name: assistpro-backend-app
+#     tty: true
+#     restart: unless-stopped
+#     volumes:
+#       - assistpro_backend_vendor:/var/www/html/vendor
+#       - ../codes:/var/www/html/
+#     ports:
+#       - "9000:9000"
+#     networks:
+#       - assistpro-net
+#     depends_on:
+#       - mysql
+#       - redis
+
+#   web:
+#     build:
+#       context: ../
+#       dockerfile: docker/web/web.Dockerfile
+#       args:
+#         HOST_IP: assistpro-backend-app
+#         APP_PORT: 9000
+#     image: assistpro-backend-web-img
+#     container_name: assistpro-backend-web
+#     tty: true
+#     restart: unless-stopped
+#     ports:
+#       - "8081:80"
+#     volumes:
+#       - ../codes:/var/www/html
+#     networks:
+#       - assistpro-net
+#     depends_on:
+#       - app
+
+# volumes:
+#   assistpro_backend_vendor:
+#   mysql_data:
+
+# networks:
+#   assistpro-net:
+#     name: assistpro-net
+#     driver: bridge
+
+
+version: "3.9"
+
+services:
+  # Redis সার্ভিস
+  redis:
+    image: redis:alpine
+    container_name: assistpro-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - assistpro-net
+
+  # আপনার অ্যাপ (PHP-FPM)
+  app:
+    build:
+      context: ../
+      dockerfile: docker/app/app.Dockerfile
+    image: assistpro-backend-app-img
+    container_name: assistpro-backend-app
+    restart: unless-stopped
+    # আপনার .env ফাইল থেকে ডাটাবেস/Redis কনফিগ পড়বে
+    env_file:
+      - ../codes/.env
+    volumes:
+      - assistpro_backend_vendor:/var/www/html/vendor
+      - ../codes:/var/www/html
+    ports:
+      - "9000:9000"
+    networks:
+      - assistpro-net
+    depends_on:
+      - redis
+
+  # Nginx ফ্রন্টএন্ড
+  web:
+    build:
+      context: ../
+      dockerfile: docker/web/web.Dockerfile
+      args:
+        HOST_IP: assistpro-backend-app
+        APP_PORT: 9000
+    image: assistpro-backend-web-img
+    container_name: assistpro-backend-web
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ../codes:/var/www/html
+    networks:
+      - assistpro-net
+    depends_on:
+      - app
+
+volumes:
+  assistpro_backend_vendor:
+
+networks:
+  assistpro-net:
+    name: assistpro-net
+    driver: bridge

@@ -1,0 +1,126 @@
+#--------------------------------------------------------------------
+# Example Environment Configuration file
+#
+# This file can be used as a starting point for your own
+# custom .env files, and contains most of the possible settings
+# available in a default install.
+#
+# By default, all of the settings are commented out. If you want
+# to override the setting, you must un-comment it by removing the '#'
+# at the beginning of the line.
+#--------------------------------------------------------------------
+
+#--------------------------------------------------------------------
+# ENVIRONMENT
+#--------------------------------------------------------------------
+
+# CI_ENVIRONMENT = production
+CI_ENVIRONMENT = development
+
+#--------------------------------------------------------------------
+# APP
+#--------------------------------------------------------------------
+
+app.baseURL = 'http://localhost:7071/'
+app.indexPage = ''
+# If you have trouble with `.`, you could also use `_`.
+# app_baseURL = ''
+# app.forceGlobalSecureRequests = false
+# app.CSPEnabled = false
+
+#--------------------------------------------------------------------
+# DATABASE
+#--------------------------------------------------------------------
+
+database.default.hostname = localhost
+database.default.database = microfin_v3_sbs
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+database.default.DBPrefix =
+database.default.port = 3306
+
+# If you use MySQLi as tests, first update the values of Config\Database::$tests.
+# database.tests.hostname = localhost
+# database.tests.database = ci4_test
+# database.tests.username = root
+# database.tests.password = root
+# database.tests.DBDriver = MySQLi
+# database.tests.DBPrefix =
+# database.tests.charset = utf8mb4
+# database.tests.DBCollat = utf8mb4_general_ci
+# database.tests.port = 3306
+
+#--------------------------------------------------------------------
+# ENCRYPTION
+#--------------------------------------------------------------------
+
+# encryption.key =
+
+#--------------------------------------------------------------------
+# SESSION
+#--------------------------------------------------------------------
+
+# session.driver = 'CodeIgniter\Session\Handlers\FileHandler'
+# session.savePath = null
+
+#--------------------------------------------------------------------
+# LOGGER
+#--------------------------------------------------------------------
+
+# logger.threshold = 4
+
+#--------------------------------------------------------------------
+# API SECURITY OPTIONS
+#--------------------------------------------------------------------
+apiSecurityConfig.isCheckMethod = true
+apiSecurityConfig.isCheckUserAgent = true
+apiSecurityConfig.isCheckOrigin = true
+apiSecurityConfig.isCheckOs = true
+
+# Default Redis
+redis.default.host=192.168.25.231
+redis.default.port=6379
+redis.default.password=Close3241
+redis.default.database=0
+
+# Authentication Redis
+redis.authentication.host=192.168.25.231
+redis.authentication.port=6379
+redis.authentication.password=Close3241
+redis.authentication.database=0
+
+# Session Redis
+redis.session.host=192.168.25.231
+redis.session.port=6379
+redis.session.password=Close3241
+redis.session.database=1
+
+# Authorization Redis
+redis.authorization.host=192.168.25.231
+redis.authorization.port=6379
+redis.authorization.password=Close3241
+redis.authorization.database=2
+
+# Branch Redis
+redis.branch.host=192.168.25.231
+redis.branch.port=6379
+redis.branch.password=Close3241
+redis.branch.database=4
+
+# MFI DB Redis
+redis.mfi_db.host=192.168.25.231
+redis.mfi_db.port=6379
+redis.mfi_db.password=Close3241
+redis.mfi_db.database=14
+
+# Redis DBs
+redis.authentication_db=0
+redis.session_db=1
+redis.holiday_db=1
+redis.authorization_db=2
+redis.branch_db=4
+redis.config_db=5
+redis.db_geolocation_db=10
+redis.other_geolocation_db=11
+redis.mfi_db=14

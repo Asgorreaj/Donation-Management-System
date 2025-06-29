@@ -1,0 +1,171 @@
+pipeline {
+
+    agent any
+
+    parameters {
+        string(name: 'IMAGE_VERSION', 
+            defaultValue: 'v0', 
+            description: 'Specify the version of the Docker image to be used.')
+
+        string(name: 'GIT_CREDENTIAL_ID', 
+            defaultValue: 'sadik-git', 
+            description: 'Enter the ID of the credentials to access the Git repository.')
+
+        choice(name: 'IS_CACHE', 
+            choices: ['', '--no-cache'],
+            description: 'Select whether to use cached layers during the Docker build. Leave blank to use cache, or choose "--no-cache" to rebuild everything.')
+
+        string(name: 'REGISTRY_PATH', 
+            defaultValue: '192.168.26.73:5000/sadik', 
+            description: 'Enter the registry path for the Docker images in this format: <host>:<port>/<repository>.')
+
+        string(name: 'APP_HOST_PORT', 
+            defaultValue: '9000', 
+            description: 'Enter the host port number that the Docker container will use to expose its services.')
+
+        string(name: 'WEB_HOST_PORT', 
+            defaultValue: '8081', 
+            description: 'Enter the host port number that the Docker container will use to expose its services.')
+    }
+
+    stages {
+
+        stage('Stage-1: Set Environment Variables') {
+            steps {
+                script {
+                    SERVERS = [
+                        [ip: "192.168.26.145", cred: "sadik-pc", user: "shadikul"],
+                        // [ip: "192.168.26.145", cred: "sadik-pc", user: "shadikul"]
+                    ]
+                    env.DOCKER_PROJECT_NAME = "assistpro-backend"
+                    env.NGINX_IMAGE_NAME = "${env.DOCKER_PROJECT_NAME}-image-web"
+                    env.PHP_IMAGE_NAME = "${env.DOCKER_PROJECT_NAME}-image-app"
+                    env.NGINX_CONTAINER_NAME = "${env.DOCKER_PROJECT_NAME}-web"
+                    env.PHP_CONTAINER_NAME = "${env.DOCKER_PROJECT_NAME}-app"
+                    env.IMAGE_VERSION = "${params.IMAGE_VERSION}"
+                    env.NETWORK_NAME = "docker-network"
+                    env.SUBNET = "172.26.0.0/16"
+                    env.APP_HOST_PORT = "${params.APP_HOST_PORT}"
+                    env.WEB_HOST_PORT = "${params.WEB_HOST_PORT}"
+                    env.GIT_URI = "http://192.168.1.15/microfin-dev-next"
+                    env.GIT_BRANCH = "sadik"
+                }
+            }
+        }
+
+        stage('Stage-2: Pull Project Form Git') {
+            steps {
+                script {
+                    git branch: "${GIT_BRANCH}", credentialsId: "${params.GIT_CREDENTIAL_ID}", url: "${GIT_URI}/assistpro-backend"
+                    sh 'mv codes/.env.prod codes/.env'
+                    echo("================================================")
+                    echo "     Project Pulled From Git Successfully"
+                    echo("================================================")
+                }
+            }
+        }
+
+        stage('Stage-3: Build, Tag, Push & Deployment') {
+            steps {
+                script {
+                    SERVERS.each { server ->
+                        echo("===================================================================")
+                        echo " Started Processing for Server: ${server.ip} and User: ${server.user}"
+                        echo("===================================================================")
+
+                        processServer(server)
+
+                        echo("====================================================")
+                        echo " Successfully Deployed into Server: ${server.ip}"
+                        echo("====================================================")
+                    }
+                }
+            }
+        } 
+    }
+    post {
+        always {
+            echo("===============================================")
+            echo ' Deployment Process Completed for All Servers!'
+            echo("===============================================")
+        }
+    }
+}
+
+def processServer(server) {
+    def registryPathApp = "${params.REGISTRY_PATH}/${PHP_IMAGE_NAME}:${IMAGE_VERSION}"
+    def registryPathWeb = "${params.REGISTRY_PATH}/${NGINX_IMAGE_NAME}:${IMAGE_VERSION}"
+
+    buildImages(server)
+
+    tagAndPush(registryPathApp, registryPathWeb)
+
+    dockerAppDeploy(server, registryPathApp)
+
+    dockerWebDeploy(server, registryPathWeb)
+}
+
+def buildImages(server) {
+    sh """
+        docker build ${params.IS_CACHE} -t ${env.PHP_IMAGE_NAME} -f docker/app/app.Dockerfile . && \
+        docker build ${params.IS_CACHE} --build-arg HOST_IP=${server.ip} --build-arg APP_PORT=${params.APP_HOST_PORT} -t ${env.NGINX_IMAGE_NAME} -f docker/web/web.Dockerfile .
+    """
+    echo("================================================")
+    echo "  Project Built and Image Created Successfully"
+    echo("================================================")
+}
+
+def tagAndPush(appImage, webImage) {
+    sh """
+        docker tag ${env.PHP_IMAGE_NAME}:latest ${appImage}
+        docker tag ${env.NGINX_IMAGE_NAME}:latest ${webImage}
+                    
+        docker push ${appImage}
+        docker push ${webImage}
+    """
+    echo("=====================================================")
+    echo " Image Tagged and Pushed into Registry Successfully"
+    echo("=====================================================")
+}
+
+def dockerAppDeploy(server, appImage) { 
+    echo "Deploying to server: ${server.ip} (${server.user})"
+    sshagent(credentials: [server.cred]) {
+        def remoteServer = "${server.user}@${server.ip}"
+        sh """
+            ssh -o StrictHostKeyChecking=no ${remoteServer} "
+                docker pull ${appImage} &&
+                docker network create --subnet=${env.SUBNET} ${env.NETWORK_NAME} || true &&
+                docker stop ${env.PHP_CONTAINER_NAME} || true &&
+                docker rm ${env.PHP_CONTAINER_NAME} || true &&
+                docker run -d \\
+                    -e serverIp=${server.ip} \\
+                    --name ${env.PHP_CONTAINER_NAME} \\
+                    --network ${env.NETWORK_NAME} \\
+                    -p ${params.APP_HOST_PORT}:9000 \\
+                    ${appImage}
+            "
+        """
+    }
+}
+
+def dockerWebDeploy(server, webImage) { 
+
+    echo "Deploying to server: ${server.ip} (${server.user})"
+    sshagent(credentials: [server.cred]) {
+        def remoteServer = "${server.user}@${server.ip}"
+        sh """
+            ssh -o StrictHostKeyChecking=no ${remoteServer} "
+                docker pull ${webImage} &&
+                docker stop ${env.NGINX_CONTAINER_NAME} || true &&
+                docker rm ${env.NGINX_CONTAINER_NAME} || true &&
+                docker run -d \\
+                    -e serverIp=${server.ip} \\
+                    --name ${env.NGINX_CONTAINER_NAME} \\
+                    --network ${env.NETWORK_NAME} \\
+                    -p ${params.WEB_HOST_PORT}:80 \\
+                    ${webImage}
+            "
+        """
+    }
+}

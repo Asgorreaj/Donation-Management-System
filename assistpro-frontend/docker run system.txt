@@ -1,0 +1,4 @@
+cd C:\proj\assistpro-frontend\codes
+docker compose down --volumes
+docker compose build
+docker compose up -d

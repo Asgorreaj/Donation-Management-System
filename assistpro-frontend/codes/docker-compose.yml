@@ -1,0 +1,18 @@
+# codes/docker-compose.yml
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .                 # এখানে codes/ এর ভিতরে
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app                   # host কোড /app এ
+      - /app/node_modules        # protect container node_modules
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+    # package.json এর dev স্ক্রিপ্ট চালাবে
+    command: npm run dev -- -H 0.0.0.0 -p 3000

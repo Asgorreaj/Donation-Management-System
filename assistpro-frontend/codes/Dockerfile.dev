@@ -1,0 +1,12 @@
+# codes/Dockerfile.dev
+FROM node:20-alpine
+WORKDIR /app
+
+# package.json install
+COPY package*.json ./
+RUN npm ci
+
+# code will come in via volume, তাই COPY না করে দিলাম
+
+EXPOSE 3000
+CMD ["npm","run","dev","--","-H","0.0.0.0","-p","3000"]
