@@ -61,7 +61,9 @@ class AuthController extends BaseController
             $expiry = 3600; // 1 hour
 
             // Save token to Redis
-            $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
+            $redisHost = getenv('REDIS_TLS') === 'true' ? 'tls://' . (getenv('REDIS_HOST') ?: 'assistpro-redis') : (getenv('REDIS_HOST') ?: 'assistpro-redis');
+        $this->redis->connect($redisHost, (int)(getenv('REDIS_PORT') ?: 6379));
+        if (getenv('REDIS_PASSWORD')) { $this->redis->auth(getenv('REDIS_PASSWORD')); }
             $this->redis->setex("Bearer:{$token}", $expiry, json_encode([
                 'user_id' => $user['id'],
                 'username' => $user['username'],
@@ -87,7 +89,9 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader); // remove prefix
 
-        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
+        $redisHost = getenv('REDIS_TLS') === 'true' ? 'tls://' . (getenv('REDIS_HOST') ?: 'assistpro-redis') : (getenv('REDIS_HOST') ?: 'assistpro-redis');
+        $this->redis->connect($redisHost, (int)(getenv('REDIS_PORT') ?: 6379));
+        if (getenv('REDIS_PASSWORD')) { $this->redis->auth(getenv('REDIS_PASSWORD')); }
         $session = $this->redis->get("Bearer:{$token}");
 
         if ($session) {
@@ -155,7 +159,9 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader);
 
-        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
+        $redisHost = getenv('REDIS_TLS') === 'true' ? 'tls://' . (getenv('REDIS_HOST') ?: 'assistpro-redis') : (getenv('REDIS_HOST') ?: 'assistpro-redis');
+        $this->redis->connect($redisHost, (int)(getenv('REDIS_PORT') ?: 6379));
+        if (getenv('REDIS_PASSWORD')) { $this->redis->auth(getenv('REDIS_PASSWORD')); }
         $session = $this->redis->get("Bearer:{$token}");
 
         if (!$session) {
@@ -180,7 +186,9 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader);
 
-        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
+        $redisHost = getenv('REDIS_TLS') === 'true' ? 'tls://' . (getenv('REDIS_HOST') ?: 'assistpro-redis') : (getenv('REDIS_HOST') ?: 'assistpro-redis');
+        $this->redis->connect($redisHost, (int)(getenv('REDIS_PORT') ?: 6379));
+        if (getenv('REDIS_PASSWORD')) { $this->redis->auth(getenv('REDIS_PASSWORD')); }
         $session = $this->redis->get("Bearer:{$token}");
 
         if (!$session) {
