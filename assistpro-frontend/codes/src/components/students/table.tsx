@@ -22,6 +22,12 @@ export const TableWrapper = () => {
   const [branchOptions, setBranchOptions] = useState<Branch[]>([]);
   const [page, setPage] = useState<number>(1);
   const [searchFilter, setSearchFilter] = useState<string>("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("search");
+    if (q) setSearchFilter(q);
+  }, []);
   const [debouncedSearchFilter, setDebouncedSearchFilter] = useState<string>("");
   const [branchFilter, setBranchFilter] = useState<number>(-1);
   const [showBranchFilter, setShowBranchFilter] = useState(true);

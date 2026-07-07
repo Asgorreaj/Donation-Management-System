@@ -136,13 +136,14 @@ export const loginToAuthService = async (
   const tokenInfo = {
     access_token: tokenData.token,
     expires_in: tokenData.expires_in,
-    expires_at: tokenData.expires_in + Date.now(),
+    expires_at: tokenData.expires_in * 1000 + Date.now(),
+    refresh_expires_at: Date.now() + 365 * 24 * 60 * 60 * 1000,
   };
 
   console.log("✅ Login successful → tokenData:", tokenData);
   console.log("✅ tokenInfo:", tokenInfo);
 
-  const user = { mfi_name: domain || "disa" };
+  const user = { mfi_name: domain || "disa", username };
 
   localStorage.setItem("tokenInfo", JSON.stringify(tokenInfo));
   localStorage.setItem("userData", JSON.stringify(user));
@@ -214,6 +215,10 @@ export const assistProApiFetch = async (route: string, options: RequestInit = {}
 
 export const coreApiFetch = async (route: string, options: RequestInit = {}) => {
   return apiFetch(`${CORE_SERVICE_URL}/${route}`, options).then((res) => res.json());
+};
+
+export const authApiFetch = async (route: string, options: RequestInit = {}) => {
+  return apiFetch(`${AUTH_SERVICE_URL}/${route}`, options).then((res) => res.json());
 };
 
 export const httpClient = {

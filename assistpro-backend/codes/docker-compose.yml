@@ -12,8 +12,18 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ../docker/sql/assist_pro_mf_disa.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - assistpro-net
+  redis:
+    image: redis:7-alpine
+    container_name: assistpro-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - assistpro-net
+
 
   app:
     build:

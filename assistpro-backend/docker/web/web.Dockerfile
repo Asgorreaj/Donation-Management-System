@@ -9,7 +9,7 @@ WORKDIR $WORK_DIR
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ./docker/web/conf.d/app.conf /etc/nginx/conf.d/app.conf
 COPY ./docker/web/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 ENV CLIENT_MAX_BODY_SIZE=1m \
     NGINX_PORT=80 \

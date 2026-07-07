@@ -32,11 +32,11 @@ const DonationChart = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   const COLOR = {
-    primary: "#4F46E5",
-    hover: "#6366F1",
-    grid: "#E5E7EB",
-    text: "#6B7280",
-    background: "#F9FAFB"
+    primary: "#C08829",
+    hover: "#E0B565",
+    grid: "#E4DCC8",
+    text: "#14342B99",
+    background: "#FAF6EE"
   };
 
   useEffect(() => {
@@ -124,9 +124,9 @@ const DonationChart = () => {
   }, [timeRange, currentYear]);
 
   const formatYAxis = (value: number) => {
-    if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
-    return `$${value}`;
+    if (value >= 1000000) return `৳${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `৳${(value / 1000).toFixed(1)}K`;
+    return `৳${value}`;
   };
 
   const handlePrevYear = () => {
@@ -140,29 +140,29 @@ const DonationChart = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 h-full shadow-sm border border-gray-100">
+    <div className="bg-paper-card rounded-md p-6 h-full border border-paper-line shadow-[0_1px_2px_rgba(20,52,43,0.06)]">
       <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
         <div>
-          <h1 className="text-lg font-semibold text-gray-800">Donation Analytics</h1>
-          <p className="text-sm text-gray-500">Track donation patterns over time</p>
+          <h1 className="font-display text-lg font-semibold text-ink">Donation Analytics</h1>
+          <p className="text-sm text-ink/50">Track donation patterns over time</p>
         </div>
         
         <div className="flex flex-col items-end gap-2">
-          <p className="text-2xl font-bold text-gray-900">${total.toLocaleString()}</p>
+          <p className="font-mono text-2xl font-semibold text-ink">৳{total.toLocaleString()}</p>
           
           <div className="flex gap-1">
             {timeRange === "12months" && (
               <div className="flex items-center gap-2 mr-2">
                 <button 
                   onClick={handlePrevYear}
-                  className="p-1 text-gray-500 hover:text-gray-700"
+                  className="p-1 text-ink/50 hover:text-ink"
                 >
                   &lt;
                 </button>
                 <span className="text-sm font-medium">{currentYear}</span>
                 <button 
                   onClick={handleNextYear}
-                  className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                  className="p-1 text-ink/50 hover:text-ink disabled:opacity-30"
                   disabled={currentYear >= new Date().getFullYear()}
                 >
                   &gt;
@@ -173,7 +173,7 @@ const DonationChart = () => {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as "12months" | "5years" | "all")}
-              className="text-sm border border-gray-200 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              className="text-sm border border-paper-line rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-gold/20"
             >
               <option value="12months">Last 12 Months</option>
               <option value="5years">Last 5 Years</option>
@@ -184,8 +184,8 @@ const DonationChart = () => {
       </div>
 
       {isLoading ? (
-        <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-          <div className="animate-pulse text-gray-400">Loading donation data...</div>
+        <div className="h-64 flex items-center justify-center bg-paper rounded-md">
+          <div className="animate-pulse text-ink/40">Loading donation data...</div>
         </div>
       ) : (
         <div className="h-[300px]">
@@ -220,7 +220,7 @@ const DonationChart = () => {
                   background: "white",
                   padding: "8px 12px"
                 }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, "Donation"]}
+                formatter={(value: number) => [`৳${value.toLocaleString()}`, "Donation"]}
                 labelStyle={{ fontWeight: 500, color: COLOR.text, fontSize: 12 }}
                 itemStyle={{ color: COLOR.primary, fontSize: 12 }}
               />

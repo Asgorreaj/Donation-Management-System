@@ -165,4 +165,68 @@ public function delete($id = null)
     ]);
 }
 
+    // Bulk import students from a CSV file.
+    // Expected columns (header row required):
+    // name,father_name,mother_name,gender,address_present,address_permanent,nid,institution,year,status
+    public function import()
+    {
+        $file = $this->request->getFile('file');
+
+        if (!$file || !$file->isValid()) {
+            return $this->fail('Please upload a valid CSV file.', 400);
+        }
+
+        $handle = fopen($file->getTempName(), 'r');
+        if (!$handle) {
+            return $this->fail('Unable to read the uploaded file.', 400);
+        }
+
+        $header = fgetcsv($handle);
+        $header = array_map(static fn($h) => strtolower(trim($h)), $header);
+
+        $created = 0;
+        $errors = [];
+        $rowNum = 1;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $rowNum++;
+            if (count($row) === 1 && trim($row[0]) === '') {
+                continue; // skip blank lines
+            }
+
+            $rowData = array_combine($header, $row);
+
+            $inputData = [
+                'code'              => 1,
+                'name'              => $rowData['name'] ?? null,
+                'father_name'       => $rowData['father_name'] ?? null,
+                'mother_name'       => $rowData['mother_name'] ?? null,
+                'gender'            => $rowData['gender'] ?? 'Male',
+                'address_present'   => $rowData['address_present'] ?? null,
+                'address_permanent' => $rowData['address_permanent'] ?? null,
+                'nid'               => $rowData['nid'] ?? null,
+                'institution'       => $rowData['institution'] ?? null,
+                'year'              => $rowData['year'] ?? null,
+                'status'            => $rowData['status'] ?? 'Active',
+                'branch_id'         => AuthUserService::getBranchId(),
+            ];
+
+            if (!$this->studentValidator->validateCreate($inputData)) {
+                $errors[] = ['row' => $rowNum, 'errors' => $this->studentValidator->validation->getErrors()];
+                continue;
+            }
+
+            $this->studentService->createStudent(new Student($inputData));
+            $created++;
+        }
+
+        fclose($handle);
+
+        return $this->respond([
+            'status'  => 200,
+            'message' => "Imported {$created} student(s) successfully.",
+            'errors'  => $errors,
+        ]);
+    }
+
 }

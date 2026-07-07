@@ -7,13 +7,10 @@ async function handleMissingToken(mfiSegment: string, request: NextRequest) {
 }
 
 async function handleExpiredToken(mfiSegment: string, request: NextRequest, tokenInfo: any) {
-  const currentTime = Date.now();
-  const refreshTokenExpiration = tokenInfo.refresh_expires_at;
-
-  if (currentTime > refreshTokenExpiration) {
-    return NextResponse.redirect(new URL(`/${mfiSegment}/api/auth/logout`, request.url));
-  }
-  return NextResponse.redirect(new URL(`/${mfiSegment}/api/auth/refresh`, request.url));
+  // Our simplified backend has no working refresh-token endpoint,
+  // so on expiry we just clear the session and send the user to login
+  // instead of looping through /api/auth/refresh forever.
+  return NextResponse.redirect(new URL(`/${mfiSegment}/api/auth/logout`, request.url));
 }
 
 export async function middleware(request: NextRequest) {

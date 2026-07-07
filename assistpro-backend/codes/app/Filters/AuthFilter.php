@@ -62,6 +62,20 @@ class AuthFilter implements FilterInterface
         config('RuntimeConfig')->set('site_name', $siteName);
         config('RuntimeConfig')->set('authorization', $authHeader);
 
+        // Populate a simple user context for this standalone setup
+        // (single default branch, since the original multi-branch head-office
+        // system isn't part of this project)
+        \App\Services\Auth\AuthUserService::setUser((object) [
+            'default_branch_id' => 1,
+            'old_user_id'       => 1,
+            'role_id'           => 1,
+            'branch_type'       => 'HO',
+            'is_head_office'    => 1,
+            'software_date_mis' => date('Y-m-d'),
+            'software_date_ais' => date('Y-m-d'),
+            'sw_start_date_of_operation' => date('Y-m-d'),
+        ]);
+
         return true;
     }
 
@@ -76,6 +90,3 @@ class AuthFilter implements FilterInterface
     //     config('RuntimeConfig')->set('authorization', $authToken);
     // }
 }
-
-    
-

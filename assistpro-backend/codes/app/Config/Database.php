@@ -26,14 +26,12 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        // 'hostname'     => 'localhost',
-        'hostname'     => '192.168.0.237,1433',
-        'username'     => 'sa',
-        'password'     => 'root',
+        'hostname'     => 'mysql',
+        'username'     => 'root',
+        'password'     => 'Asgor@123',
         'database'     => 'assist_pro_mf_disa',
-        'DBDriver'     => 'SQLSRV',
+        'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
-        'schema'       => 'dbo',
         'pConnect'     => false,
         'DBDebug'      => true,
         'charset'      => 'utf8mb4',
@@ -43,7 +41,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 1433,
+        'port'         => 3306,
         'numberNative' => false,
         'dateFormat'   => [
             'date'     => 'Y-m-d',

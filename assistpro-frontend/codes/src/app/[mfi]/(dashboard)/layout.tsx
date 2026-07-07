@@ -1,43 +1,49 @@
-import { deleteAuthCookie, getTokenInfo } from "@/actions/auth.action";
+import { getTokenInfo } from "@/actions/auth.action";
 import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
-import AdminPage from "./admin/page";
-
 
 export default async function DashboardLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { mfi: string };
 }) {
   const tokenInfo = await getTokenInfo();
-  
+  const mfi = params?.mfi ?? "";
+
   if (!tokenInfo) {
-    redirect('/disa/login');
-  } 
-   // if (!tokenInfo) {
-  //   redirect('/auth/login');
-  // } 
+    redirect(`/${mfi}/login`);
+  }
+
   return (
-    <div className="h-screen flex">
-      {/* LEFT */}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
+    <div className="h-screen flex bg-paper">
+      {/* LEFT SECTION: Sidebar (the ledger's cover) */}
+      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] bg-ink flex flex-col">
         <Link
-          href="/disa/admin"
-          className="flex items-center justify-center lg:justify-start gap-2"
+          href={`/${mfi}/admin`}
+          className="flex items-center justify-center gap-2 border-b border-paper/10 px-4 py-5 lg:justify-start"
         >
-          <Image src="/logo.png" alt="logo" width={32} height={32} />
-          <span className="hidden lg:block font-bold">Assist Pro</span>
+          <Image src="/logo.png" alt="logo" width={28} height={28} className="rounded-sm" />
+          <span className="hidden font-display text-[15px] font-semibold text-paper lg:block">
+            Assist<span className="text-gold-light">Pro</span>
+          </span>
         </Link>
-        <Menu />
+        <div className="flex-1 px-1 lg:px-3">
+          <Menu />
+        </div>
+        <div className="hidden px-4 py-3 font-mono text-[9px] uppercase tracking-[0.18em] text-paper/30 lg:block">
+          Ledger v1.0
+        </div>
       </div>
-      {/* RIGHT */}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll flex flex-col">
+
+      {/* RIGHT SECTION: Main Content (the ledger's pages) */}
+      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-paper overflow-y-auto flex flex-col">
         <Navbar />
-        {children}
+        <div className="flex-grow p-4">{children}</div>
       </div>
     </div>
   );

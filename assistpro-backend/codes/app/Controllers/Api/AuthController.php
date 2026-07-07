@@ -144,4 +144,74 @@ class AuthController extends BaseController
             'message' => 'Failed to register user!'
         ]);
     }
+
+    /**
+     * Return the currently authenticated user's basic info.
+     * Reads the session stored in Redis under the bearer token.
+     * @return ResponseInterface
+     */
+    public function me(): ResponseInterface
+    {
+        $authHeader = $this->request->getHeaderLine('Authorization');
+        $token = str_replace('Bearer ', '', $authHeader);
+
+        $this->redis->connect('assistpro-redis', 6379);
+        $session = $this->redis->get("Bearer:{$token}");
+
+        if (!$session) {
+            return $this->failUnauthorized('Session expired. Please log in again.');
+        }
+
+        $data = json_decode($session, true);
+
+        return $this->respond([
+            'status'   => ResponseInterface::HTTP_OK,
+            'username' => $data['username'] ?? null,
+            'email'    => $data['email'] ?? null,
+        ]);
+    }
+
+    /**
+     * Change the currently authenticated user's password.
+     * @return ResponseInterface
+     */
+    public function changePassword(): ResponseInterface
+    {
+        $authHeader = $this->request->getHeaderLine('Authorization');
+        $token = str_replace('Bearer ', '', $authHeader);
+
+        $this->redis->connect('assistpro-redis', 6379);
+        $session = $this->redis->get("Bearer:{$token}");
+
+        if (!$session) {
+            return $this->failUnauthorized('Session expired. Please log in again.');
+        }
+
+        $data = json_decode($session, true);
+        $user = $this->userModel->find($data['user_id']);
+
+        if (!$user) {
+            return $this->failNotFound('User not found.');
+        }
+
+        $currentPassword = $this->request->getPost('current_password');
+        $newPassword      = $this->request->getPost('new_password');
+
+        if (!password_verify($currentPassword, $user['password'])) {
+            return $this->failUnauthorized('Current password is incorrect.');
+        }
+
+        if (strlen((string) $newPassword) < 6) {
+            return $this->fail('New password must be at least 6 characters.', 400);
+        }
+
+        $this->userModel->update($data['user_id'], [
+            'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+        ]);
+
+        return $this->respond([
+            'status'  => ResponseInterface::HTTP_OK,
+            'message' => 'Password updated successfully.',
+        ]);
+    }
 }
