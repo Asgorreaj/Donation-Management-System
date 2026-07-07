@@ -1,0 +1,45 @@
+# Render.com deployment image: PHP-FPM + Nginx combined via supervisord
+FROM php:8.3-fpm
+
+ENV TZ=Asia/Dhaka
+WORKDIR /var/www/html
+
+# System deps: nginx, supervisor, build libs (no MSSQL/ODBC needed anymore since DB is MySQL/Aiven)
+RUN apt-get update \
+ && apt-get install -y nginx supervisor curl unzip gettext-base \
+      libpng-dev zlib1g-dev libxml2-dev libzip-dev libonig-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# PHP extensions
+RUN docker-php-ext-configure gd \
+ && docker-php-ext-install -j$(nproc) gd \
+ && docker-php-ext-install pdo_mysql mysqli zip opcache \
+ && docker-php-ext-configure intl \
+ && docker-php-ext-install intl \
+ && docker-php-source delete
+
+# Redis extension (for our token/session auth)
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Composer
+RUN php -r "copy('https://getcomposer.org/installer','composer-setup.php');" \
+ && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+ && php -r "unlink('composer-setup.php');"
+
+# Copy app source
+COPY codes/ /var/www/html/
+
+RUN composer install --no-interaction --no-dev --optimize-autoloader --classmap-authoritative \
+ && chown -R www-data:www-data /var/www/html/writable
+
+# Nginx site config (Render provides $PORT; we substitute it at container start)
+COPY docker/render/nginx.conf.template /etc/nginx/templates/default.conf.template
+RUN rm -f /etc/nginx/sites-enabled/default
+
+# Supervisor config to run php-fpm + nginx together
+COPY docker/render/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/render/start.sh /start.sh
+RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
+
+EXPOSE 10000
+CMD ["/start.sh"]

@@ -61,7 +61,7 @@ class AuthController extends BaseController
             $expiry = 3600; // 1 hour
 
             // Save token to Redis
-            $this->redis->connect('assistpro-redis', 6379);
+            $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
             $this->redis->setex("Bearer:{$token}", $expiry, json_encode([
                 'user_id' => $user['id'],
                 'username' => $user['username'],
@@ -87,7 +87,7 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader); // remove prefix
 
-        $this->redis->connect('assistpro-redis', 6379);
+        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
         $session = $this->redis->get("Bearer:{$token}");
 
         if ($session) {
@@ -155,7 +155,7 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader);
 
-        $this->redis->connect('assistpro-redis', 6379);
+        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
         $session = $this->redis->get("Bearer:{$token}");
 
         if (!$session) {
@@ -180,7 +180,7 @@ class AuthController extends BaseController
         $authHeader = $this->request->getHeaderLine('Authorization');
         $token = str_replace('Bearer ', '', $authHeader);
 
-        $this->redis->connect('assistpro-redis', 6379);
+        $this->redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
         $session = $this->redis->get("Bearer:{$token}");
 
         if (!$session) {

@@ -50,6 +50,34 @@ class Database extends Config
         ],
     ];
 
+    /**
+     * Overrides $default above with environment variables when present,
+     * so the same codebase works locally (docker-compose) and on a host
+     * like Render + a managed DB like Aiven, just by setting env vars:
+     * DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, DB_SSL=true
+     */
+    private function applyEnvOverrides(): void
+    {
+        if (getenv('DB_HOST')) {
+            $this->default['hostname'] = getenv('DB_HOST');
+        }
+        if (getenv('DB_USER')) {
+            $this->default['username'] = getenv('DB_USER');
+        }
+        if (getenv('DB_PASS')) {
+            $this->default['password'] = getenv('DB_PASS');
+        }
+        if (getenv('DB_NAME')) {
+            $this->default['database'] = getenv('DB_NAME');
+        }
+        if (getenv('DB_PORT')) {
+            $this->default['port'] = (int) getenv('DB_PORT');
+        }
+        if (getenv('DB_SSL') === 'true') {
+            $this->default['encrypt'] = ['ssl_verify' => false];
+        }
+    }
+
     //    /**
     //     * Sample database connection for SQLite3.
     //     *
@@ -190,6 +218,7 @@ class Database extends Config
     public function __construct()
     {
         parent::__construct();
+        $this->applyEnvOverrides();
 
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that

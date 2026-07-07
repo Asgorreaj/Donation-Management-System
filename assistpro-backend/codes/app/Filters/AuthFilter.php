@@ -44,7 +44,7 @@ class AuthFilter implements FilterInterface
 
         // Connect to Redis
         $redis = new \Redis();
-        $redis->connect('assistpro-redis', 6379);
+        $redis->connect(getenv('REDIS_HOST') ?: 'assistpro-redis', (int)(getenv('REDIS_PORT') ?: 6379));
 
         // Check if token exists in Redis
         $session = $redis->get("Bearer:{$token}");
