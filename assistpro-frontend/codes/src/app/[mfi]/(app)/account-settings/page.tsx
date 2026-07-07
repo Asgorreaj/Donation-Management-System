@@ -92,7 +92,7 @@ const AccountSettingsPage = () => {
         className="mt-4 rounded-md border border-paper-line bg-paper-card p-5 shadow-[0_1px_2px_rgba(20,52,43,0.06)]"
       >
         <h2 className="font-display text-lg font-semibold text-ink">Change password</h2>
-        <p className="mt-1 text-sm text-ink/60">Use at least 6 characters. You'll stay signed in after this.</p>
+        <p className="mt-1 text-sm text-ink/60">Use at least 6 characters. You&apos;ll stay signed in after this.</p>
 
         <div className="mt-4 grid gap-3">
           <div>
