@@ -7,7 +7,7 @@ WORKDIR /var/www/html
 # System deps: nginx, supervisor, build libs (no MSSQL/ODBC needed anymore since DB is MySQL/Aiven)
 RUN apt-get update \
  && apt-get install -y nginx supervisor curl unzip gettext-base \
-      libpng-dev zlib1g-dev libxml2-dev libzip-dev libonig-dev \
+      libpng-dev zlib1g-dev libxml2-dev libzip-dev libonig-dev libicu-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # PHP extensions
