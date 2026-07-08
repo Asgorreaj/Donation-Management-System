@@ -8,7 +8,15 @@ import { usePathname, useParams } from "next/navigation";
 import React from "react";
 import Swal from "sweetalert2";
 
-const menuItems = [
+type MenuItem = {
+  icon: string;
+  label: string;
+  visible: string[];
+  href?: string;
+  action?: string;
+};
+
+const menuItems: { title: string; items: MenuItem[] }[] = [
   {
     title: "MENU",
     items: [
