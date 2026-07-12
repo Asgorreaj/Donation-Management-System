@@ -68,7 +68,7 @@ const Menu = () => {
       <div className="flex flex-col gap-6">
         {menuItems.map((section) => (
           <div className="flex flex-col gap-1" key={section.title}>
-            <span className="hidden lg:block font-mono text-[10px] uppercase tracking-[0.18em] text-paper/35 mb-1 px-3">
+            <span className="hidden lg:block font-mono text-[10px] uppercase tracking-[0.18em] text-ink/35 mb-1 px-3">
               {section.title}
             </span>
             {section.items.map((item) => {
@@ -81,16 +81,16 @@ const Menu = () => {
                 <>
                   <span
                     className={`absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full transition-all ${
-                      active ? "bg-gold-light" : "bg-transparent group-hover:bg-paper/20"
+                      active ? "bg-gold" : "bg-transparent group-hover:bg-ink/15"
                     }`}
                   />
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
                       isLogout
-                        ? "bg-alert/10 group-hover:bg-alert/25"
+                        ? "bg-alert/10 group-hover:bg-alert/15"
                         : active
-                        ? "bg-gold/20"
-                        : "bg-paper/5 group-hover:bg-paper/10"
+                        ? "bg-gold/15"
+                        : "bg-ink/5 group-hover:bg-ink/10"
                     }`}
                   >
                     <Image
@@ -98,17 +98,16 @@ const Menu = () => {
                       alt={item.label}
                       width={16}
                       height={16}
-                      className={`transition-opacity ${active ? "opacity-100" : "opacity-70 group-hover:opacity-90"}`}
-                      style={active && !isLogout ? { filter: "sepia(1) saturate(3) hue-rotate(0deg) brightness(1.1)" } : undefined}
+                      className="opacity-80"
                     />
                   </div>
                   <span
                     className={`hidden lg:block text-[13px] font-medium transition-colors ${
                       isLogout
-                        ? "text-paper/70 group-hover:text-alert"
+                        ? "text-ink/70 group-hover:text-alert"
                         : active
-                        ? "text-gold-light"
-                        : "text-paper/70 group-hover:text-paper"
+                        ? "text-ink"
+                        : "text-ink/70 group-hover:text-ink"
                     }`}
                   >
                     {item.label}
@@ -133,7 +132,7 @@ const Menu = () => {
                   href={`/${mfi}${item.href}`}
                   key={item.label}
                   className={`group relative flex items-center gap-3 rounded-md px-3 py-2 mx-1 justify-center lg:justify-start transition-all ${
-                    active ? "bg-paper/[0.07]" : "hover:bg-paper/5"
+                    active ? "bg-gold/10" : "hover:bg-ink/5"
                   }`}
                 >
                   {content}
