@@ -222,4 +222,23 @@ class AuthController extends BaseController
             'message' => 'Password updated successfully.',
         ]);
     }
+
+    /**
+     * Public, no-auth-required aggregate stats for the login page marketing panel.
+     * Deliberately exposes only counts/sums - no personal/sensitive data.
+     */
+    public function publicStats(): ResponseInterface
+    {
+        $db = db_connect();
+
+        $studentCount = $db->table('students')->countAllResults();
+        $branchCount  = $db->table('branches')->countAllResults();
+        $totalRaised  = $db->table('donations')->selectSum('amount')->get()->getRow('amount') ?? 0;
+
+        return $this->respond([
+            'students'     => (int) $studentCount,
+            'branches'     => (int) $branchCount,
+            'total_raised' => (float) $totalRaised,
+        ]);
+    }
 }

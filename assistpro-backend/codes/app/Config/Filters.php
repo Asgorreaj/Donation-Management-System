@@ -81,6 +81,7 @@ class Filters extends BaseFilters
                 'api/login',
                 'api/v1/register',
                 'api/v1/login',
+                'api/public-stats',
             ]
         ],
     ],
