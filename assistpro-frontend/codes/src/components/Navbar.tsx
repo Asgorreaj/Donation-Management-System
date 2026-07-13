@@ -88,13 +88,13 @@ const Navbar = () => {
               <p className="text-sm font-medium text-ink">{username || "Account"}</p>
               <p className="text-[11px] text-ink/40">Signed in</p>
             </div>
-            <Link
+            {/* <Link
               href={`/${mfi}/account-settings`}
               className="block px-4 py-2.5 text-sm text-ink/80 hover:bg-paper"
               onClick={() => setOpen(false)}
             >
               Account settings
-            </Link>
+            </Link> */}
             <button
               onClick={handleLogout}
               className="block w-full px-4 py-2.5 text-left text-sm text-alert hover:bg-alert/10"
