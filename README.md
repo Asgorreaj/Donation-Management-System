@@ -2,7 +2,7 @@
 
 A full-stack platform for managing student sponsorships, tracking donations, and reporting across multiple branches. Originally built for a microfinance/education NGO, then re-engineered into a standalone, self-hosted system with its own authentication, and deployed live on free-tier cloud infrastructure.
 
-**🔗 Live Demo:** https://donation-management-system-psi.vercel.app/disa/login
+**🔗 Live Demo:** https://donation-management-system-psi.vercel.app/asgor/login
 
 **Demo login credentials:**
 | Field | Value |
