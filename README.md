@@ -8,7 +8,7 @@ A full-stack platform for managing student sponsorships, tracking donations, and
 | Field | Value |
 |---|---|
 | Username | `owner` |
-| Password | `Admin@123` |
+| Password | `Asgor@123` |
 
 > This is a demo account with seeded sample data (500+ students, 200+ donations, 10 branches) so you can explore every feature immediately without setting anything up.
 
