@@ -64,7 +64,8 @@ const Menu = () => {
   };
 
   return (
-    <div className="mt-4 text-sm flex flex-col justify-between h-full">
+    <div className="mt-4 text-sm flex flex-col justify-between h-[calc(100vh-80px)]">
+      {/* Top Menu Items */}
       <div className="flex flex-col gap-6">
         {menuItems.map((section) => (
           <div className="flex flex-col gap-1" key={section.title}>
@@ -141,6 +142,30 @@ const Menu = () => {
             })}
           </div>
         ))}
+      </div>
+
+      {/* Bottom Animated Section */}
+      <div className="mt-auto p-2">
+        <div className="relative overflow-hidden rounded-xl bg-gold/5 border border-gold/10 p-3 flex flex-col items-center lg:items-start gap-2 group hover:border-gold/20 transition-all">
+          {/* Pulsing Light Indicator */}
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-gold"></span>
+            </span>
+            <span className="hidden lg:block text-[11px] font-mono tracking-wider text-gold font-bold uppercase">
+              AssistPro Live
+            </span>
+          </div>
+          
+          {/* Small Subtext only visible on larger screens */}
+          <p className="hidden lg:block text-[11px] text-ink/50 leading-relaxed">
+            "Making a difference, one donation at a time."
+          </p>
+          
+          {/* Subtle Background Decorative Shape */}
+          <div className="absolute -right-4 -bottom-4 w-12 h-12 bg-gold/10 rounded-full blur-md group-hover:bg-gold/15 transition-all" />
+        </div>
       </div>
     </div>
   );
